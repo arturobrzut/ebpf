@@ -1,0 +1,71 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: filechecker
+  namespace: default
+immutable: false
+data:
+  filename: "techtalk.txt"
+  debug: "1"
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: ebpf
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: ebpf
+  template:
+    metadata:
+      labels:
+        app: ebpf
+    spec:
+      restartPolicy: Always
+      hostPID: true
+      hostNetwork: true
+      securityContext: {}
+      containers:
+        - resources: {}
+          name: ebpf
+          command:
+            - /bin/sh
+            - '-c'
+          securityContext:
+            privileged: true
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: noderoot
+              mountPath: /host
+          terminationMessagePolicy: File
+          env:
+            - name: FILE_CHECK
+              valueFrom:
+                configMapKeyRef:
+                  name: filechecker
+                  key: filename
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: filechecker
+                  key: debug
+          image: 'quay.io/arturobrzut/bb:v1'
+          workingDir: /src/
+          args:
+            - |
+              cp ./main-static /host/home
+
+              cp ./*.o /host/home
+
+              chroot /host /home/main-static
+      hostIPC: true
+      volumes:
+        - name: noderoot
+          hostPath:
+            path: /
+            type: ''
+
+
+
+

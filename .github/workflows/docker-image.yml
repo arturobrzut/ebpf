@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: |
+           docker login -u="${{ secrets.DOCKER_USER }}" -p="${{ secrets.DOCKER_PASSWORD }}" quay.io
+           docker build . --file Dockerfile --tag quay.io/arturobrzut/bb:v1
+           docker push quay.io/arturobrzut/bb:v1
