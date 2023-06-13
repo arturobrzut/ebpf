@@ -43,13 +43,13 @@ func main() {
 	clearMapData(techTalkMap)
 	techTalkMap.Update(inputKeyIdUS, inputValueUS)
 
-	// GET OUR PROGRAM AND ATTACH IT TO THE CHMOD HOOK (CHANGE PERMISSION) -> START EBPF
+	// GET OUR PROGRAM AND ATTACH IT TO THE OPEN HOOK -> START EBPF
 	program, err := bpfModule.GetProgram("hello_tech_talk")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-	_, err = program.AttachTracepoint("syscalls", "sys_enter_fchmodat")
+	_, err = program.AttachTracepoint("syscalls", "sys_enter_openat")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
