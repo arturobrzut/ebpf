@@ -1,5 +1,4 @@
 #include <vmlinux.h>
-#include <linux/path.h>
 #include <bpf/bpf_helpers.h>
 
 // Based on sudo cat /sys/kernel/debug/tracing/events/syscalls/sys_enter_fchmodat/format
