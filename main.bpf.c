@@ -23,7 +23,7 @@ struct {
 } tech_talk SEC(".maps");
 
 
-SEC("tracepoint/syscalls/sys_enter_fchmodat")
+SEC("tracepoint/syscalls/sys_enter_openat")
 int hello_tech_talk(struct fchmodat_args *ctx)
 {
     int ret;
@@ -35,7 +35,7 @@ int hello_tech_talk(struct fchmodat_args *ctx)
     char *tmpData;
     char *tmpData2;
 
-    // GET FILENAME ON WHICH SOMEONE RUN CHMOD (FROM HOOK)
+    // GET FILENAME WHICH SOMEONE O PEN(FROM HOOK)
     ret = bpf_probe_read(&tmpData, sizeof(tmpData), &ctx->filename);
     if (ret != 0) {
         bpf_printk("ERROR Read");
@@ -47,12 +47,12 @@ int hello_tech_talk(struct fchmodat_args *ctx)
     }
 
     // GET FILENAME FROM OUR CONFIG
-    char *filenameX = bpf_map_lookup_elem(&tech_talk,&inputKey);
-    if (!filenameX) {
+    char *filename = bpf_map_lookup_elem(&tech_talk,&inputKey);
+    if (!filename) {
         bpf_printk("ERROR Read problem with configmap");
     }
 
-    ret = bpf_probe_read(&tmpData2, sizeof(tmpData2), &filenameX);
+    ret = bpf_probe_read(&tmpData2, sizeof(tmpData2), &filename);
     if (ret != 0) {
         bpf_printk("ERROR Read2");
     }
@@ -68,12 +68,11 @@ int hello_tech_talk(struct fchmodat_args *ctx)
         if (ret != 0) {
             bpf_printk("ERROR during map update");
         }
-        bpf_printk("Found unauthorized chmod for my file, kill the process");
+        bpf_printk("Found unauthorized open my file, kill the process");
         bpf_printk("FileName: %s ",valKernelFileName);
-        bpf_printk("Mode: %d ", ctx->mode2);
         bpf_printk("PID: %d",bpf_get_current_pid_tgid());
 
-        //KILL THE PROCESS WHICH RUN CHMOD
+        //KILL THE PROCESS WHO OPEN MY FILE
         bpf_send_signal(9);
     }
     return 0;
