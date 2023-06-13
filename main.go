@@ -66,7 +66,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		if dataFromKernelSend(dataFromKernel) {
-			fmt.Println("DETECT CHMOD ON MY FILE: " + string(filenameCheck))
+			fmt.Println("DETECT OPEN MY FILE: " + string(filenameCheck))
 		}
 		// AFTER READ CLEAR DATA IN MAP
 		clearMapData(techTalkMap)
