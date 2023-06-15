@@ -42,7 +42,7 @@ int hello_tech_talk(struct fchmodat_args *ctx)
 
     ret = bpf_probe_read_str(valKernelFileName, sizeof(valKernelFileName), tmpData);
     if (ret < 0) {
-        bpf_printk("ERROR Read String");
+       // bpf_printk("ERROR Read String");
     }
 
     // GET FILENAME FROM OUR CONFIG
