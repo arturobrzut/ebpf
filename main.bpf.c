@@ -3,15 +3,15 @@
 
 
 //#include <linux/bpf.h>
-#include <linux/if_ether.h>
-#include <linux/if_packet.h>
-#include <linux/ip.h>
-#include <linux/tcp.h>
-#include <linux/udp.h>
-#include <linux/sched.h>
-#include <linux/nsproxy.h>
-#include <linux/pid_namespace.h>
-#include <linux/sched/task.h>
+//#include <linux/if_ether.h>
+//#include <linux/if_packet.h>
+//#include <linux/ip.h>
+//#include <linux/tcp.h>
+//#include <linux/udp.h>
+//#include <linux/sched.h>
+//#include <linux/nsproxy.h>
+//#include <linux/pid_namespace.h>
+//#include <linux/sched/task.h>
 
 SEC("kprobe/sys_execve")
 int kprobe_sys_execve(struct pt_regs *ctx)
