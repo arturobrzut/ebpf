@@ -1,6 +1,46 @@
 #include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
 
+
+#include <linux/bpf.h>
+#include <linux/if_ether.h>
+#include <linux/if_packet.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <linux/udp.h>
+#include <linux/sched.h>
+#include <linux/nsproxy.h>
+#include <linux/pid_namespace.h>
+#include <linux/sched/task.h>
+
+SEC("kprobe/sys_execve")
+int kprobe_sys_execve(struct pt_regs *ctx)
+{
+    struct task_struct *task = (struct task_struct *)bpf_get_current_task();
+    struct pid_namespace *pid_ns = task_active_pid_ns(task);
+    struct nsproxy *nsproxy = task_nsproxy(task);
+    struct task_struct *real_task = nsproxy->pid_ns->child_reaper;
+    struct task_struct *target_task = NULL;
+
+    // Find the target task with the given PID
+    for_each_process(real_task) {
+        if (real_task->pid == pid_ns->child_reaper->pid) {
+            target_task = real_task;
+            break;
+        }
+    }
+
+    // Retrieve the name of the pod from the target task
+    char name[TASK_COMM_LEN];
+    bpf_get_task_comm(name, sizeof(name), target_task);
+
+    // Print the pod name
+    bpf_trace_printk("Pod name: %s\n", name);
+
+    return 0;
+}
+
+
 // Based on sudo cat /sys/kernel/debug/tracing/events/syscalls/sys_enter_fchmodat/format
 struct fchmodat_args {
     short common_type;
