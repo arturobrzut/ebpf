@@ -1,23 +1,17 @@
-#include <vmlinux.h>
+//#include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
 
 
-//#include <linux/bpf.h>
-//#include <linux/if_ether.h>
-//#include <linux/if_packet.h>
-//#include <linux/ip.h>
-//#include <linux/tcp.h>
-//#include <linux/udp.h>
-//#include <linux/sched.h>
-//#include <linux/nsproxy.h>
-//#include <linux/pid_namespace.h>
-//#include <linux/sched/task.h>
-#define next_task(p) \
-	list_entry_rcu((p)->tasks.next, struct task_struct, tasks)
-
-#define for_each_process(p) \
-	for (p = &init_task ; (p = next_task(p)) != &init_task ; )
-
+#include <linux/bpf.h>
+#include <linux/if_ether.h>
+#include <linux/if_packet.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <linux/udp.h>
+#include <linux/sched.h>
+#include <linux/nsproxy.h>
+#include <linux/pid_namespace.h>
+#include <linux/sched/task.h>
 
 SEC("kprobe/sys_execve")
 int kprobe_sys_execve(struct pt_regs *ctx)
