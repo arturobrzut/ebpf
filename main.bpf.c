@@ -1,4 +1,4 @@
-//#include <vmlinux.h>
+#include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
 
 
@@ -8,10 +8,16 @@
 //#include <linux/ip.h>
 //#include <linux/tcp.h>
 //#include <linux/udp.h>
-#include <linux/sched.h>
+//#include <linux/sched.h>
 //#include <linux/nsproxy.h>
 //#include <linux/pid_namespace.h>
 //#include <linux/sched/task.h>
+#define next_task(p) \
+	list_entry_rcu((p)->tasks.next, struct task_struct, tasks)
+
+#define for_each_process(p) \
+	for (p = &init_task ; (p = next_task(p)) != &init_task ; )
+
 
 SEC("kprobe/sys_execve")
 int kprobe_sys_execve(struct pt_regs *ctx)
@@ -23,6 +29,7 @@ int kprobe_sys_execve(struct pt_regs *ctx)
     struct task_struct *target_task = NULL;
 
     // Find the target task with the given PID
+
     for_each_process(real_task) {
         if (real_task->pid == pid_ns->child_reaper->pid) {
             target_task = real_task;
