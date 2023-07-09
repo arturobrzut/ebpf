@@ -11,7 +11,7 @@
 #include <linux/sched.h>
 //#include <linux/nsproxy.h>
 //#include <linux/pid_namespace.h>
-#include <linux/sched/task.h>
+//#include <linux/sched/task.h>
 
 SEC("kprobe/sys_execve")
 int kprobe_sys_execve(struct pt_regs *ctx)
