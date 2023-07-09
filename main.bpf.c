@@ -13,6 +13,25 @@
 //#include <linux/pid_namespace.h>
 //#include <linux/sched/task.h>
 
+#define next_task(p) \
+	list_entry_rcu((p)->tasks.next, struct task_struct, tasks)
+
+#define for_each_process(p) \
+	for (p = &init_task ; (p = next_task(p)) != &init_task ; )
+
+SEC("kprobe/sys_read")
+int block_read(struct pt_regs *ctx)
+{
+    // Check if the file descriptor matches the one you want to block
+    int fd = PT_REGS_PARM1(ctx);
+    if (fd == YOUR_FILE_DESCRIPTOR) {
+        // Block the read system call by returning an error code
+        return -EPERM;
+    }
+    // Allow the read system call to proceed
+    return 0;
+}
+
 SEC("kprobe/sys_execve")
 int kprobe_sys_execve(struct pt_regs *ctx)
 {
