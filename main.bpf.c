@@ -2,13 +2,13 @@
 #include <bpf/bpf_helpers.h>
 
 
-#include <linux/bpf.h>
-#include <linux/if_ether.h>
-#include <linux/if_packet.h>
-#include <linux/ip.h>
-#include <linux/tcp.h>
-#include <linux/udp.h>
-#include <linux/sched.h>
+//#include <linux/bpf.h>
+//#include <linux/if_ether.h>
+//#include <linux/if_packet.h>
+//#include <linux/ip.h>
+//#include <linux/tcp.h>
+//#include <linux/udp.h>
+//#include <linux/sched.h>
 //#include <linux/nsproxy.h>
 //#include <linux/pid_namespace.h>
 //#include <linux/sched/task.h>
