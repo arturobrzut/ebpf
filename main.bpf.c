@@ -10,7 +10,7 @@
 #include <linux/udp.h>
 #include <linux/sched.h>
 //#include <linux/nsproxy.h>
-#include <linux/pid_namespace.h>
+//#include <linux/pid_namespace.h>
 #include <linux/sched/task.h>
 
 SEC("kprobe/sys_execve")
