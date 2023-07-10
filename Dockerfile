@@ -35,7 +35,8 @@ RUN git clone --depth 1 git://git.kernel.org/pub/scm/linux/kernel/git/stable/lin
 RUN ls -l /sys/kernel/btf/vmlinux
 RUN /src/bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 RUN ls -l vmlinux.h
-RUN cat vmlinux.h
+RUN ls -l /src/libbpf-bootstrap/vmlinux/vmlinux.h
+RUN cp vmlinux.h /src/libbpf-bootstrap/vmlinux/vmlinux.h
 
 
 COPY * /src/
