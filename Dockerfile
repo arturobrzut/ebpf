@@ -31,10 +31,18 @@ RUN cd libbpf-bootstrap/libbpf/src && \
 # Clones the linux kernel repo and use the latest linux kernel source BPF headers 
 RUN git clone --depth 1 git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git && \
     cp linux/include/uapi/linux/bpf* /usr/include/linux/
+
     
+RUN bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+RUN ls -l vmlinux.h
+RUN cat vmlinux.h
+
+
 COPY * /src/
 RUN go mod download github.com/aquasecurity/libbpfgo
 RUN make all
+
+
 
 FROM ubuntu:latest
 RUN apt-get update
