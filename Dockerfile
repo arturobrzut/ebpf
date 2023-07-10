@@ -32,8 +32,8 @@ RUN cd libbpf-bootstrap/libbpf/src && \
 RUN git clone --depth 1 git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git && \
     cp linux/include/uapi/linux/bpf* /usr/include/linux/
 
-    
-RUN bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+RUN ls -l /sys/kernel/btf/vmlinux
+RUN /src/bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 RUN ls -l vmlinux.h
 RUN cat vmlinux.h
 
