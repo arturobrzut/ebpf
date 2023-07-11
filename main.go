@@ -49,6 +49,19 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
+
+	program2, err := bpfModule.GetProgram("bpf_prog")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(-1)
+	}
+
+	_, err = program2.AttachKprobe("__x64_sys_read")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(-1)
+	}	
+	
 	_, err = program.AttachTracepoint("syscalls", "sys_enter_openat")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
