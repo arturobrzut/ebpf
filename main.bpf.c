@@ -1,23 +1,7 @@
 
-
-
-//#include <linux/bpf.h>
-//#include <linux/if_ether.h>
-//#include <linux/if_packet.h>
-//#include <linux/ip.h>
-//#include <linux/tcp.h>
-//#include <linux/udp.h>
-//#include <linux/sched.h>
-//#include <linux/nsproxy.h>
-//#include <linux/pid_namespace.h>
-//#include <linux/sched/task.h>
 #include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
-#define next_task(p) \
-	list_entry_rcu((p)->tasks.next, struct task_struct, tasks)
 
-#define for_each_process(p) \
-	for (p = &init_task ; (p = next_task(p)) != &init_task ; )
 
 SEC("kprobe/sys_read")
 int block_read(struct pt_regs *ctx)
@@ -26,7 +10,7 @@ int block_read(struct pt_regs *ctx)
     int fd = PT_REGS_PARM1(ctx);
     if (fd == 12) {
         // Block the read system call by returning an error code
-        return -EPERM;
+        return -2; //-EPERM;
     }
     // Allow the read system call to proceed
     return 0;
