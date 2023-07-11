@@ -7,14 +7,14 @@ SEC("kprobe/sys_read")
 int bpf_prog(struct pt_regs *ctx)
 {
     struct filename *file;
-    char filename[256];
+    char filename[128];
 
     bpf_probe_read_user_str(filename, sizeof(filename), (void *)PT_REGS_PARM1(ctx));
 
     bpf_probe_read_kernel(&file, sizeof(file), (void *)(PT_REGS_PARM1(ctx) + sizeof(unsigned long)));
 
     if (file) {
-        char path[256];
+        char path[128];
         bpf_probe_read_user_str(path, sizeof(path), (void *)file->name);
 
         if (bpf_strcmp(path, "/home/test.txt") == 0) {
