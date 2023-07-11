@@ -38,7 +38,7 @@ SEC("kprobe/sys_read")
 int block_read(struct pt_regs *ctx)
 {
     // Check if the file descriptor matches the one you want to block
-    int fd = PT_REGS_PARM1(ctx);
+    int fd = 1; // ctx->di;
     if (fd == 12) {
         // Block the read system call by returning an error code
         return -2; //-EPERM;
