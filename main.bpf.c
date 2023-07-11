@@ -19,17 +19,18 @@ int bpf_prog(struct pt_regs *ctx)
     char filename[128];
 
     bpf_probe_read_user_str(filename, sizeof(filename), (void *)(ctx->di));
+bpf_printk("ERROR Read problem with configmap %s", filename);
+    
+    //bpf_probe_read_kernel(&file, sizeof(file), (void *)((ctx->di) + sizeof(unsigned long)));
 
-    bpf_probe_read_kernel(&file, sizeof(file), (void *)((ctx->di) + sizeof(unsigned long)));
+   // if (file) {
+     //   char path[128];
+       // bpf_probe_read_user_str(path, sizeof(path), (void *)file->name);
 
-    if (file) {
-        char path[128];
-        bpf_probe_read_user_str(path, sizeof(path), (void *)file->name);
-
-        if (bpf_strcmp(path, "/home/test.txt") == 0) {
-            return -1; // Block the read
-        }
-    }
+      //  if (bpf_strcmp(path, "/home/test.txt") == 0) {
+        //    return -1; // Block the read
+       // }
+    //}
 
     return 0; // Allow the read
 }
