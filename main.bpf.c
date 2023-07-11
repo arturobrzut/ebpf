@@ -12,14 +12,15 @@ static inline int bpf_strcmp(char *s1, char *s2)
     return bpf_strncmp(s1, s2, s1_size < s2_size ? s1_size : s2_size);
 }
 
-SEC("kprobe/sys_read")
+SEC("kprobe/sys_open")
 int bpf_prog(struct pt_regs *ctx)
 {
     struct filename *file;
-    char filename[128];
+    char filename[256];
 
-    bpf_probe_read_user_str(filename, sizeof(filename), (void *)(ctx->di));
-bpf_printk("ERROR Read problem with configmap %s", filename);
+   ret =  bpf_probe_read_user_str(filename, sizeof(filename), (void *)(ctx->di));
+    bpf_printk("CODE %d", ret);
+bpf_printk("XXX %s", filename);
     
     //bpf_probe_read_kernel(&file, sizeof(file), (void *)((ctx->di) + sizeof(unsigned long)));
 
