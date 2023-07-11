@@ -24,39 +24,11 @@ int block_read(struct pt_regs *ctx)
 {
     // Check if the file descriptor matches the one you want to block
     int fd = PT_REGS_PARM1(ctx);
-    if (fd == YOUR_FILE_DESCRIPTOR) {
+    if (fd == 12) {
         // Block the read system call by returning an error code
         return -EPERM;
     }
     // Allow the read system call to proceed
-    return 0;
-}
-
-SEC("kprobe/sys_execve")
-int kprobe_sys_execve(struct pt_regs *ctx)
-{
-    struct task_struct *task = (struct task_struct *)bpf_get_current_task();
-    struct pid_namespace *pid_ns = task_active_pid_ns(task);
-    struct nsproxy *nsproxy = task_nsproxy(task);
-    struct task_struct *real_task = nsproxy->pid_ns->child_reaper;
-    struct task_struct *target_task = NULL;
-
-    // Find the target task with the given PID
-
-    for_each_process(real_task) {
-        if (real_task->pid == pid_ns->child_reaper->pid) {
-            target_task = real_task;
-            break;
-        }
-    }
-
-    // Retrieve the name of the pod from the target task
-    char name[TASK_COMM_LEN];
-    bpf_get_task_comm(name, sizeof(name), target_task);
-
-    // Print the pod name
-    bpf_trace_printk("Pod name: %s\n", name);
-
     return 0;
 }
 
