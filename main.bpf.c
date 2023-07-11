@@ -18,7 +18,7 @@ int bpf_prog(struct pt_regs *ctx)
     struct filename *file;
     char filename[256];
 
-   int ret =  bpf_probe_read_user_str(filename, sizeof(filename), (void *)(ctx->di));
+   int ret =  bpf_probe_read_user_str(filename, sizeof(filename), ctx->di);
     bpf_printk("CODE %d", ret);
 bpf_printk("XXX %s", filename);
     
