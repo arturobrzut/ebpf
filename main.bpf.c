@@ -9,9 +9,9 @@ int bpf_prog(struct pt_regs *ctx)
     struct filename *file;
     char filename[128];
 
-    bpf_probe_read_user_str(filename, sizeof(filename), (void *)PT_REGS_PARM1(ctx));
+    bpf_probe_read_user_str(filename, sizeof(filename), (void *)(ctx->di);
 
-    bpf_probe_read_kernel(&file, sizeof(file), (void *)(PT_REGS_PARM1(ctx) + sizeof(unsigned long)));
+    bpf_probe_read_kernel(&file, sizeof(file), (void *)((ctx->di) + sizeof(unsigned long)));
 
     if (file) {
         char path[128];
