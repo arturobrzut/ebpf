@@ -1,5 +1,4 @@
 package main
-
 import "C"
 
 import (
@@ -16,7 +15,6 @@ func main() {
 	if os.Getenv("DEBUG") == "1" {
 		go kernelTrace()
 	}
-
 	// LOAD BPF OBJECT AND GET MAP
 	bpfModule, err := LoadBPF("/home/main.bpf.o")
 	if err != nil {
@@ -24,7 +22,6 @@ func main() {
 		os.Exit(-1)
 	}
 	defer bpfModule.Close()
-
 	// GET KERNEL MAP
 	techTalkMap, err := bpfModule.GetMap("tech_talk")
 	if err != nil {
@@ -32,42 +29,25 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-
 	// READ FILENAME FROM CONFIG MAP
 	filenameCheck := []byte(os.Getenv("FILE_CHECK"))
-
 	// ADD FILENAME TO KERNEL MAP AS OUR EBPF CONFIGURATION
 	inputKeyId := uint32(1)
 	inputKeyIdUS := unsafe.Pointer(&inputKeyId)
 	inputValueUS := unsafe.Pointer(&filenameCheck[0])
 	clearMapData(techTalkMap)
 	techTalkMap.Update(inputKeyIdUS, inputValueUS)
-
 	// GET OUR PROGRAM AND ATTACH IT TO THE OPEN HOOK -> START EBPF
 	program, err := bpfModule.GetProgram("hello_tech_talk")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-
-	program2, err := bpfModule.GetProgram("bpf_prog")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(-1)
-	}
-
-	_, err = program2.AttachKprobe("__x64_sys_read")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(-1)
-	}	
-	
 	_, err = program.AttachTracepoint("syscalls", "sys_enter_openat")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-
 	fmt.Println("Waiting for data")
 	for {
 		// GET VALUE FROM KERNEL MAP
@@ -93,7 +73,6 @@ func LoadBPF(filename string) (*bpf.Module, error) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-
 	err = bpfModule.BPFLoadObject()
 	if err != nil {
 		bpfModule.Close()
@@ -102,7 +81,7 @@ func LoadBPF(filename string) (*bpf.Module, error) {
 	}
 	return bpfModule, err
 }
-
+	
 func clearMapData(bpfMap *bpf.BPFMap) {
 	empty := []byte(" ")
 	inputUS := unsafe.Pointer(&empty[0])
@@ -118,6 +97,7 @@ func clearMapData(bpfMap *bpf.BPFMap) {
 func dataFromKernelSend(dataFromKernel []byte) bool {
 	return dataFromKernel[0] != ' '
 }
+
 func kernelTrace() {
 	f, err := os.Open("/sys/kernel/debug/tracing/trace_pipe")
 	if err != nil {
