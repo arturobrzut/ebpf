@@ -8,6 +8,13 @@ data:
   filename: "techtalk.txt"
   debug: "1"
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ebpf-service-account
+  namespace: default
+automountServiceAccountToken: true
+---
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -22,6 +29,7 @@ spec:
       labels:
         app: ebpf
     spec:
+      serviceAccountName: ebpf-service-account
       restartPolicy: Always
       hostPID: true
       hostNetwork: true
