@@ -18,7 +18,7 @@ struct {
     __type(key, u32);
     __type(value, char[64]);
     __uint(max_entries, 64);
-} tech_talk SEC(".maps");
+} dod SEC(".maps");
 
 int compare(char src[64], char dst[64], int sizeVal) {
   int retVal = 0;
@@ -32,7 +32,7 @@ int compare(char src[64], char dst[64], int sizeVal) {
 }
 
 SEC("tracepoint/syscalls/sys_enter_openat")
-int hello_tech_talk(struct fchmodat_args *ctx)
+int hello_dod(struct fchmodat_args *ctx)
 {
     int ret;
     u32 inputKey = 1;
@@ -54,7 +54,7 @@ int hello_tech_talk(struct fchmodat_args *ctx)
     }
 
     // get filename from eBPFMap -> our configuration
-    char *filename = bpf_map_lookup_elem(&tech_talk,&inputKey);
+    char *filename = bpf_map_lookup_elem(&dod,&inputKey);
     if (!filename) {
         bpf_printk("ERROR Read problem with configmap");
     }
@@ -72,7 +72,7 @@ int hello_tech_talk(struct fchmodat_args *ctx)
         
         // If this is the same filename 
         // update eBPFMap for UserSpace Program -> notification
-        ret = bpf_map_update_elem(&tech_talk, &keyOutput, &valMyFileName, BPF_ANY);
+        ret = bpf_map_update_elem(&dod, &keyOutput, &valMyFileName, BPF_ANY);
         if (ret != 0) {
             bpf_printk("ERROR during map update");
         }
