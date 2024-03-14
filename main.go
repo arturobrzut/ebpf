@@ -45,7 +45,7 @@ func main() {
 	techTalkMap.Update(inputKeyIdUS, inputValueUS)
 	
 	// Get our eBPG program and attach tracepoint for events
-	program, err := bpfModule.GetProgram("hello_tech_talk")
+	program, err := bpfModule.GetProgram("hello_dod")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
