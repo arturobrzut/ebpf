@@ -11,33 +11,40 @@ import (
 )
 
 func main() {
+
+	// Get Configuration from EnvVar -> ConfigMap
 	fmt.Println("CONFIG: Filename: " + os.Getenv("FILE_CHECK") + ", DEBUG=" + os.Getenv("DEBUG"))
 	if os.Getenv("DEBUG") == "1" {
 		go kernelTrace()
 	}
-	// LOAD BPF OBJECT AND GET MAP
+	
+	// Load eBPF Object
 	bpfModule, err := LoadBPF("/home/main.bpf.o")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
 	defer bpfModule.Close()
-	// GET KERNEL MAP
-	techTalkMap, err := bpfModule.GetMap("tech_talk")
+	
+	// Get eBPF Map
+	techTalkMap, err := bpfModule.GetMap("dod")
 	if err != nil {
 		bpfModule.Close()
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
-	// READ FILENAME FROM CONFIG MAP
+	
+	// Read FileName from EnvVar -> ConfigMap
 	filenameCheck := []byte(os.Getenv("FILE_CHECK"))
-	// ADD FILENAME TO KERNEL MAP AS OUR EBPF CONFIGURATION
+	
+	// Set FileName to EbpfMap as our configuration
 	inputKeyId := uint32(1)
 	inputKeyIdUS := unsafe.Pointer(&inputKeyId)
 	inputValueUS := unsafe.Pointer(&filenameCheck[0])
 	clearMapData(techTalkMap)
 	techTalkMap.Update(inputKeyIdUS, inputValueUS)
-	// GET OUR PROGRAM AND ATTACH IT TO THE OPEN HOOK -> START EBPF
+	
+	// Get our eBPG program and attach tracepoint for events
 	program, err := bpfModule.GetProgram("hello_tech_talk")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -48,9 +55,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
 	}
+	
 	fmt.Println("Waiting for data")
 	for {
-		// GET VALUE FROM KERNEL MAP
+		// Try to get value from Kernel by eBPF Map
 		outputKeyId := uint32(2)
 		outputKeyIdUS := unsafe.Pointer(&outputKeyId)
 		dataFromKernel, err := techTalkMap.GetValue(outputKeyIdUS)
@@ -58,10 +66,13 @@ func main() {
 			fmt.Println("ERROR ")
 			fmt.Fprintln(os.Stderr, err)
 		}
+
+		// If Kernel Send the data, then log it 
 		if dataFromKernelSend(dataFromKernel) {
 			fmt.Println("DETECT OPEN MY FILE: " + string(filenameCheck))
 		}
-		// AFTER READ CLEAR DATA IN MAP
+		
+		// After all Clear eBPF Map 
 		clearMapData(techTalkMap)
 		time.Sleep(3 * time.Second)
 	}
