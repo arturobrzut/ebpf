@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: filechecker
-  namespace: default
+  namespace: ebpf
 immutable: false
 data:
   filename: "dod-2024.txt"
@@ -12,14 +12,14 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ebpf-service-account
-  namespace: default
+  namespace: ebpf
 automountServiceAccountToken: true
 ---
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
   name: ebpf
-  namespace: default
+  namespace: ebpf
 spec:
   selector:
     matchLabels:
