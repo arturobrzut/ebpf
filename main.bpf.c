@@ -48,10 +48,7 @@ int hello_dod(struct fchmodat_args *ctx)
     if (ret != 0) {
         bpf_printk("ERROR Read");
     }
-    ret = bpf_probe_read_str(valKernelFileName, sizeof(valKernelFileName), tmpData);
-    if (ret < 0) {
-        bpf_printk("ERROR Read String");
-    }
+    bpf_probe_read_str(valKernelFileName, sizeof(valKernelFileName), tmpData);
 
     // get filename from eBPFMap -> our configuration
     char *filename = bpf_map_lookup_elem(&dod,&inputKey);
@@ -62,10 +59,7 @@ int hello_dod(struct fchmodat_args *ctx)
     if (ret != 0) {
         bpf_printk("ERROR Read");
     }
-    ret = bpf_probe_read_str(valMyFileName, sizeof(valMyFileName), tmpData2);
-    if (ret < 0) {
-        bpf_printk("ERROR Read String");
-    }
+    bpf_probe_read_str(valMyFileName, sizeof(valMyFileName), tmpData2);
     
     // Compare filename from eBPFMap and from the event
     if (compare(valKernelFileName, valMyFileName, 11) == 0) {
