@@ -5,7 +5,7 @@ metadata:
   namespace: default
 immutable: false
 data:
-  filename: "techtalk.txt"
+  filename: "dod-2024.txt"
   debug: "1"
 ---
 apiVersion: v1
