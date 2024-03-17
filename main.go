@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	// Get Configuration from EnvVar -> ConfigMap
 	fmt.Println("CONFIG: Filename: " + os.Getenv("FILE_CHECK") + ", DEBUG=" + os.Getenv("DEBUG"))
 	if os.Getenv("DEBUG") == "1" {
